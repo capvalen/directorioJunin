@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>DIRECTORIO - COLEGIO DE ECONOMISTAS DE JUNÍN</title>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+	<link rel="preconnect" href="https://fonts.gstatic.com">
+	<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+</head>
+<body>
+<style>
+	*{font-family: 'Roboto', sans-serif!important;}
+	.form-control:focus{
+		border-color: #891f30;
+		box-shadow: 0 0 0 0.2rem rgb(101 16 29 / 65%);
+	}
+	.form-control{color: #6d1523;}
+	#divColegiados .form-control::placeholder{
+		font-size: 0.6em!important;
+	}
+	.btn-primary{
+		background-color: #891f30;
+		border-color: #891f30;
+	}
+	.btn-primary:hover, .btn-primary:not(:disabled):not(.disabled):active, .btn-primary:focus {
+	background-color: #731927;
+	border-color: #731927;
+	}
+	.btn-primary:focus,
+	.btn-primary:not(:disabled):not(.disabled).active:focus, .btn-primary:not(:disabled):not(.disabled):active:focus, .show>.btn-primary.dropdown-toggle:focus{box-shadow: 0 0 0 0.2rem rgb(137 31 48 / 65%);}
+	#divColegiados label{
+		margin-bottom: 0;
+		font-size: 0.8em;
+		color: #7d7d7d;
+	}
+	#divColegiados p{
+		color: #891f30;
+	}
+	h4{margin-bottom: 0;}
+	.alert-success {
+		color: #199a37;
+		background-color: #b8ffc9;
+		border-color: #8ef5a6;
+	}
+	.alert-danger {
+    color: #750404;
+    background-color: #ff8d8d;
+    border-color: #e45353;
+	}
+	tr:hover{
+		cursor:pointer;
+	}
+	hr{
+		margin: 5px 0 20px 0;
+    width: 50%;
+	}
+	#offcanvas label{
+		margin: 1rem 0 0 0;
+		color: #7d7d7d;
+		font-size: 0.9em;
+	}
+	.form-check-input:checked {
+    background-color: #891f30;
+    border-color: #821928;
+	}
+	.toast{
+		z-index: 1042;
+	}
+</style>
+	<nav class="navbar navbar-expand-lg navbar-dark bg-dark " style="background-color: #790014e0!important;">
+
+		<div class="container-fluid">
+			<a class="nav-brand mx-4 px-4" href="#"><img src="images/logo-web03.png" alt=""  style="max-width: 300px;"/></a>
+			<div class="navbar-nav me-auto">
+				<a class="nav-link" href="https://cejunin.org.pe/"><span class=""><i class="bi bi-arrow-90deg-left"></i> Volver al Inicio</span></a>
+			</div>
+			<div class="d-flex navbar-nav">
+				<a class="nav-link" href="#!" onclick="app.iniciarSesion()"><span class=""><i class="bi bi-key"></i></span></a>
+			</div>
+		</div>
+	</nav>
+	
+	
+	<div class="container my-5" id="app">
+		<h1 class="display-4 text-center">Directorio de Colegio de Economistas de Junín</h1>
+		<div class="row" v-if="!adm_ac">
+			<div class="col-md-6">
+				<div class="card">
+					<div class="card-body">
+						<h5 class="text-muted">Búsqueda</h5>
+						<p class="text-muted">Rellene cuidadosamente sus datos por favor:</p>
+						<input type="text" class="form-control form-control-lg" id="txtCampo1" placeholder="D.N.I., N° Colegiatura, Apellidos" v-model="campoBusqueda">
+						<button class="btn btn-primary btn-block btn-lg my-3" @click="buscarColegiado"><i class="bi bi-caret-right"></i> Filtrar</button>
+					</div>
+				</div>
+			</div>
+
+			<div class="col-md-6" v-if="hayColegiado && !adm_ac" id="divColegiados" >
+				<div class="card card-body">
+					<div class="w-75 mb-3" v-if="colegiado.foto!=''">
+						<img :src="'images/perfiles/'+colegiado.foto" alt="" class="img-fluid">
+					</div>
+					<label for="">Apellidos y nombres</label>
+					<p>{{colegiado.apellidos}}</p>
+					<label for="">D.N.I.</label>
+					<p>{{colegiado.dni}}</p>
+					<hr>
+					<label for="">Colegiatura CIP</label>
+					<p>{{colegiado.colegiatura}}</p>
+					<label for="">Fecha de inicio</label>
+					<p>01/06/1984</p>
+					<label for="">Condición</label>
+					<div class="alert alert-success" role="alert" v-if="colegiado.habilitado==='SI'">
+						<h4 class="alert-heading"><i class="bi bi-award"></i> HABILITADO</h4>
+					</div>
+					<div class="alert alert-danger" role="alert" v-if="colegiado.habilitado==='NO'">
+						<h4 class="alert-heading"><i class="bi bi-award"></i> NO HABILITADO</h4>
+					</div>
+					<div class="alert alert-warning" role="alert" v-if="colegiado.habilitado!='SI' && colegiado.habilitado!='NO' ">
+						<h4 class="alert-heading"><i class="bi bi-award"></i> PENDIENTE DE REVISIÓN</h4>
+					</div>
+				</div>
+			</div>
+
+		</div>
+		<div id="administracion" v-if="adm_ac">
+			<h5>Administración de Colegiados <button class="btn btn-outline-primary" @click="cargarTodos();"><i class="bi bi-bootstrap-reboot"></i></button></h5>
+			<ul class="nav nav-tabs">
+				<li class="nav-item">
+					<a class="nav-link active" id="nav-activos-tab" data-bs-toggle="tab" data-bs-target="#nav-activos" type="button" role="tab" aria-controls="nav-activos" aria-selected="true">Activos</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" id="nav-deshabilitados-tab" data-bs-toggle="tab" data-bs-target="#nav-deshabilitados" type="button" role="tab" aria-controls="nav-deshabilitados" aria-selected="false">No habilitados</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" id="nav-otros-tab" data-bs-toggle="tab" data-bs-target="#nav-otros" type="button" role="tab" aria-controls="nav-otros" aria-selected="false">Otros</a>
+				</li>
+			</ul>
+			<div class="tab-content" id="myTabContent">
+				<div class="tab-pane fade show active" id="nav-activos" role="tabpanel" aria-labelledby="activos-tab">
+					<table class="table">
+						<thead>
+							<tr>
+								<th>N°</th>
+								<th>Agremiado</th>
+								<th>DNI</th>
+								<th>N° Coleg.</th>
+								<th>Habilitado</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr v-for="(habilitados, index) in coleActivos" @click="abrirCaja(habilitados.id, 'habilitados')">
+								<td>{{index+1}}</td>
+								<td>{{habilitados.apellidos}}</td>
+								<td>{{habilitados.dni}}</td>
+								<td>{{habilitados.colegiatura}}</td>
+								<td>{{habilitados.habilitado}}</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				<div class="tab-pane fade" id="nav-deshabilitados" role="tabpanel" aria-labelledby="deshabilitados-tab">
+					<table class="table">
+						<thead>
+							<tr>
+								<th>N°</th>
+								<th>Agremiado</th>
+								<th>DNI</th>
+								<th>N° Coleg.</th>
+								<th>Habilitado</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr v-for="(deshabilitados, index) in coleNoActivos" @click="abrirCaja(deshabilitados.id, 'deshabilitados')">
+								<td>{{index+1}}</td>
+								<td>{{deshabilitados.apellidos}}</td>
+								<td>{{deshabilitados.dni}}</td>
+								<td>{{deshabilitados.colegiatura}}</td>
+								<td>{{deshabilitados.habilitado}}</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				<div class="tab-pane fade" id="nav-otros" role="tabpanel" aria-labelledby="otros-tab">
+					<table class="table">
+						<thead>
+							<tr>
+								<th>N°</th>
+								<th>Agremiado</th>
+								<th>DNI</th>
+								<th>N° Coleg.</th>
+								<th>Habilitado</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr v-for="(otros, index) in coleIndecisos" @click="abrirCaja(otros.id, 'coleIndecisos')">
+								<td>{{index+1}}</td>
+								<td>{{otros.apellidos}}</td>
+								<td>{{otros.dni}}</td>
+								<td>{{otros.colegiatura}}</td>
+								<td>{{otros.habilitado}}</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+
+		<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvas" aria-labelledby="offcanvasLabel">
+			<div class="offcanvas-header">
+				<h5 class="offcanvas-title" id="offcanvasLabel">Detalles de Agremiado</h5>
+				<button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+			</div>
+			<div class="offcanvas-body">
+				<div class="d-flex justify-content-between">
+					<label class="mt-0" for="">Foto</label>
+					<p class="mb-0 "><small><a href="#!" class="text-danger text-decoration-none" @click="borrarFoto()" v-if="conFoto" style="color: #820f1a!important;"><i class="bi bi-trash"></i> Borrar foto</a></small></p>
+				</div>
+				<div v-if="conFoto">
+					<img :src="'images/perfiles/'+colegiado.foto" class="img-fluid" >
+				</div>
+				<div v-else>
+					<input type="file" class="form-control"  ref="archivoASubir" accept="image/*" @change="archivoSub" />
+				</div>
+
+
+				<label for="">D.N.I.</label>
+				<input type="text" name="" id="" class="form-control" v-model="colegiado.dni">
+				<label for="">Apellidos y nombres</label>
+				<input type="text" name="" id="" class="form-control text-uppercase" v-model="colegiado.apellidos">
+				<label for="">N° Colegiatura</label>
+				<input type="text" name="" id="" class="form-control" v-model="colegiado.colegiatura">
+				<label for="">Fecha de Coleg.</label>
+				<input type="date" name="" id="" class="form-control" v-model="colegiado.fecha">
+				<label for="">Habilitado</label>
+				<div class="form-check">
+					<input class="form-check-input" type="checkbox" id="flexCheckDefault" @click="cambiarEstado()" v-model="selectHabilitado">
+					<label class="form-check-label mt-0" for="flexCheckDefault" v-if="selectHabilitado">SI</label>
+					<label class="form-check-label mt-0" for="flexCheckDefault" v-if="!selectHabilitado">NO</label>
+				</div>
+				<input type="text" name="" id="" class="form-control text-uppercase" v-if="!selectHabilitado" v-model="colegiado.habilitado">
+				
+
+				<button class="btn btn-primary mt-3 float-end" @click="actualizarDatos()"><i class="bi bi-arrow-counterclockwise"></i> Actualizar datos</button>
+			</div>
+		</div>
+
+		<div class="toast position-absolute align-items-center text-white bg-primary border-0 bottom-0 start-50 translate-middle-x mb-3" id="toastBien" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="10000">
+			<div class="d-flex">
+				<div class="toast-body">
+					Guardado exitosamente
+				</div>
+				<button type="button" class="btn-close btn-close-white " data-bs-dismiss="toast" aria-label="Close"></button>
+			</div>
+		</div>
+		<div class="toast position-absolute align-items-center text-white bg-danger border-0 bottom-0 start-50 translate-middle-x mb-3" id="toastMal" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="10000">
+			<div class="d-flex">
+				<div class="toast-body">
+					{{mensajeToast}}
+				</div>
+				<button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+			</div>
+		</div>
+
+		
+		<div class="modal fade" id='modalVarios' tabindex="-1">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title">Coincidencias</h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						<p>Seleccione un colegiado para ver sus detalles.</p>
+						<table class="table table-hover">
+							<tbody>
+								<tr v-for="(persona, index) in variosColegiados" @click="seleccionar(index)">
+									<td>{{index+1}}</td>
+									<td><i class="bi bi-award"></i> {{persona.apellidos}}</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="modal fade" id='modalSesion' tabindex="-1">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title"><i class="bi bi-bank2"></i> Iniciar Sesión</h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						<input class="form-control my-2" type="text" name="" id="txtUSesion" placeholder="Usuario" v-model="txtUSesion" autocomplete="off">
+						<input class="form-control my-2" type="password" name="" id="txtPSesion" placeholder="Contraseña" v-model="txtPSesion" autocomplete="off">
+						<button class="btn btn-primary btn-block float-end" @click="validarUsuario">Acceder</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+	</div>
+
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
+
+	<script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+<script>
+	var myModal, modalSesion ;
+	var app = new Vue({
+	el: '#app',
+	data: {
+		txtUSesion: '', txtPSesion:'',
+		campoBusqueda: '',
+		variosColegiados: null,
+		colegiado: [], temporal:[],
+		myModal, adm_ac:false,
+		coleActivos:null, coleNoActivos:null, coleIndecisos:null, selectHabilitado:false, nuevaFoto:'',
+		conFoto:false, hayColegiado:false, archivoSub:'', mensajeToast:''
+	},
+	mounted: function(){
+		myModal = new bootstrap.Modal(document.getElementById('modalVarios'), { keyboard: false });
+		
+	},
+	methods:{
+		buscarColegiado(){
+			this.variosColegiados=null;
+			if(this.campoBusqueda!=''){
+				axios.post('php/encontrarColegiado.php', {texto: this.campoBusqueda})
+				.then((response)=>{
+					//console.log( response.data );
+					if(response.data.length==1){
+						app.colegiado = response.data[0];
+						app.hayColegiado=true;
+					}else{
+						app.variosColegiados = response.data;
+						myModal.show()
+					}
+				})
+				.catch((error)=>{ console.log( error );});
+			}
+		},
+		seleccionar(index){
+			myModal.hide()
+			app.hayColegiado=true;
+			this.colegiado = this.variosColegiados[index];
+		},
+		iniciarSesion(){
+			if(this.adm_ac){
+				this.adm_ac=false;
+				this.colegiado=[];
+			}else{
+				modalSesion = new bootstrap.Modal(document.getElementById('modalSesion'), { keyboard: false });
+				modalSesion.show();
+			}
+		},
+		validarUsuario(){
+			axios.post('php/validarSesion.php', {usuario: this.txtUSesion, pasw: this.txtPSesion })
+			.then((response)=>{ 
+				if( response.data =='HOLA'){
+					app.adm_ac=true;
+					modalSesion.hide();
+				}else{
+					app.mensajeToast='Datos incorrectos';
+					let toast = document.getElementById('toastMal')
+					let tostada = new bootstrap.Toast(toast)
+					tostada.show()
+				}
+			})
+			.catch((error)=>{ console.log( error );});
+		},
+		cargarTodos(){
+			axios.post('php/listarTodos_activos.php').then((response)=>{ app.coleActivos = response.data; })
+			.catch((error)=>{ console.log( error );});
+			axios.post('php/listarTodos_noActivos.php').then((response)=>{ app.coleNoActivos = response.data; })
+			.catch((error)=>{ console.log( error );});
+			axios.post('php/listarTodos_indecisos.php').then((response)=>{ app.coleIndecisos = response.data; })
+			.catch((error)=>{ console.log( error );});
+		},
+		cambiarEstado(){
+			this.selectHabilitado = !this.selectHabilitado;
+			if(this.selectHabilitado){
+				this.colegiado.habilitado='SI'
+			}else{
+				this.colegiado.habilitado='NO'
+			}
+		},
+		borrarFoto(){
+			this.conFoto=false;
+			this.colegiado.foto='';
+		},
+		abrirCaja(item, caso){
+			var indice; 
+			
+			switch (caso) {
+				case 'habilitados':
+					indice = app.coleActivos.map(arra => arra.id).indexOf( item );
+					this.temporal=  this.coleActivos[indice];
+				break;
+				case 'deshabilitados': 
+				indice = app.coleNoActivos.map(arra => arra.id).indexOf( item );
+					this.temporal=  this.coleNoActivos[indice];
+				break;
+				case 'coleIndecisos': 
+				indice = app.coleIndecisos.map(arra => arra.id).indexOf( item );
+					this.temporal=  this.coleIndecisos[indice];
+				break;
+			
+				default: break;
+			}
+
+			this.colegiado.id = this.temporal.id;
+			this.colegiado.dni = this.temporal.dni;
+			this.colegiado.apellidos = this.temporal.apellidos;
+			this.colegiado.colegiatura = this.temporal.colegiatura;
+			this.colegiado.fecha = this.temporal.fecha;
+			this.colegiado.habilitado = this.temporal.habilitado;
+			this.colegiado.foto = this.temporal.foto;
+			if(this.colegiado.foto==''){
+				this.conFoto=false;
+			}else{
+				this.conFoto=true;
+			}
+			
+
+			if(this.colegiado.habilitado=='SI'){
+				this.selectHabilitado=true;
+			}else if(this.colegiado.habilitado=='NO'){
+				this.selectHabilitado=false
+			}else{
+				this.selectHabilitado=null;
+			}
+			let myOffcanvas = document.getElementById('offcanvas')
+			let bsOffcanvas = new bootstrap.Offcanvas(myOffcanvas)
+			bsOffcanvas.show();
+		},
+		actualizarDatos(){
+			if(this.archivoSub!=''){
+				this.archivo = this.$refs.archivoASubir.files[0];
+				if( this.archivo!=null ){ //Verificamos que haya un archivo adjunto //this.$refs.archivoASubir.files.length==1
+					let formData = new FormData();
+					formData.append('file', this.archivo);
+	
+					axios.post('php/copiarFoto.php', formData,{
+						headers: { 'Content-Type': 'multipart/form-data' }
+					})
+					.then(function (response) {
+						if(response.data==-1){
+							alert('Archivo no subido, inténtelo nuevamente.');
+						}else{
+							//alert('File uploaded successfully.');
+							app.conFoto=true;
+							app.colegiado.foto=response.data;
+							app.actualizarColegiado();
+						}
+					})
+					.catch(function (error) { console.log(error); });
+				}
+			}else{
+				this.actualizarColegiado();
+			}
+		},
+		actualizarColegiado(){
+			if(this.selectHabilitado){
+				this.colegiado.habilitado = "SI";
+			}else if(this.selectHabilitado==null ){
+				//this.colegiado.habilitado = "NO";
+			}else{
+				
+			}
+			
+			axios.post('php/actualizarColegiado.php', {
+				id: this.colegiado.id,
+				dni: this.colegiado.dni,
+				apellidos: this.colegiado.apellidos,
+				colegiatura: this.colegiado.colegiatura,
+				fecha: this.colegiado.fecha,
+				habilitado: this.colegiado.habilitado,
+				foto: this.colegiado.foto,
+			})
+			.then((response)=>{
+				if(response.data=='ok'){
+					app.cargarTodos();
+					let toast = document.getElementById('toastBien')
+					let tostada = new bootstrap.Toast(toast)
+					tostada.show()
+				}else{
+					app.mensajeToast='Hubo un error al guardar, inténtelo nuevamente';
+					let toast = document.getElementById('toastMal')
+					let tostada = new bootstrap.Toast(toast)
+					tostada.show()
+				}
+			})
+			.catch((error)=>{ console.log( error );
+				app.mensajeToast='Hubo un error al guardar, inténtelo nuevamente';
+				let toast = document.getElementById('toastMal')
+				let tostada = new bootstrap.Toast(toast)
+				tostada.show()
+			});
+		}
+	}
+	})
+</script>
+</body>
+</html>
